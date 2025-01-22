@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Post</title>
+</head>
+<body>
+  <h1>Editar Post</h1>
+
+  <!-- Formulario para editar el post -->
+  <form action="/posts/edit/{{post.id}}" method="post">
+    <div>
+      <label for="title">Título:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        value="{{post.title}}"
+        required
+      />
+    </div>
+    <div>
+      <label for="content">Contenido:</label>
+      <textarea
+        id="content"
+        name="content"
+        rows="5"
+        required
+      >{{post.content}}</textarea>
+    </div>
+    <button type="submit">Guardar cambios</button>
+  </form>
+
+  <!-- Botón para regresar al perfil -->
+  <a href="/profile">Cancelar</a>
+</body>
+</html>

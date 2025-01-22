@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de {{user.name}}</title>
+</head>
+<body>
+  <h1>Perfil de {{user.name}}</h1>
+  <p>Email: {{user.email}}</p>
+
+  <!-- Mostrar los posts del usuario -->
+  <h2>Posts de {{user.name}}</h2>
+  <div id="user-posts">
+    {{#if posts.length}}
+      {{#each posts}}
+        <div class="post">
+          <h3>{{this.title}}</h3>
+          <p>{{this.content}}</p>
+          <p>Publicado el: {{this.createdAt}}</p>
+
+          <!-- Mostrar opciones para administradores -->
+          {{#if (eq ../user.role 'ADMIN')}}
+            <a href="/posts/edit/{{this.id}}" class="btn-edit">Editar</a>
+            <form action="/posts/delete/{{this.id}}" method="post" style="display:inline;">
+              <button type="submit" class="btn-delete">Eliminar</button>
+            </form>
+          {{/if}}
+        </div>
+        <hr />
+      {{/each}}
+    {{else}}
+      <p>Este usuario no ha publicado ningún post todavía.</p>
+    {{/if}}
+  </div>
+
+  <!-- Botón para regresar a la página principal -->
+  <a href="/" class="btn-home">Volver a la página principal</a>
+</body>
+</html>
+

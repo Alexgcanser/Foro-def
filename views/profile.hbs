@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+</head>
+<body>
+
+      <!-- Enlace a la página principal -->
+  <nav>
+    <a href="/" class="btn-home">Volver a la página principal</a>
+  </nav>
+  
+  <h1>Perfil de {{toUpperCase email}}</h1>
+
+  <!-- Mostrar posts del usuario -->
+  <h2>Mis Posts</h2>
+  <div id="user-posts">
+    {{#if posts.length}}
+      {{#each posts}}
+        <div class="post">
+          <h3>{{this.title}}</h3>
+          <p>{{this.content}}</p>
+          <p>Publicado el: {{this.createdAt}}</p>
+
+          <!-- Botones para editar y eliminar -->
+          <a href="/posts/edit/{{this.id}}" class="btn-edit">Editar</a>
+          <form 
+            action="/posts/delete/{{this.id}}" 
+            method="post" 
+            style="display:inline;" 
+            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este post? Esta acción no se puede deshacer.')"
+          >
+            <button type="submit" class="btn-delete">Eliminar</button>
+          </form>
+        </div>
+        <hr />
+      {{/each}}
+    {{else}}
+      <p>No has publicado ningún post todavía.</p>
+    {{/if}}
+  </div>
+</body>
+</html>

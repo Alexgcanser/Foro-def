@@ -1,0 +1,54 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio</title>
+  </head>
+  <body>
+    <h1>Últimos Posts</h1>
+    <a href="/profile" class="profile-button">Ir a mi perfil</a>
+    
+    <!-- Sección para mostrar los posts -->
+    <div id="posts">
+      {{#each posts}}
+        <div class="post">
+          <h3>{{this.title}}</h3>
+          <p>{{this.content}}</p>
+          <p>
+            Autor: 
+            {{#if (eq ../user.id this.author.id)}}
+              <a href="/profile">Yo</a> <!-- Enlace al perfil editable -->
+            {{else}}
+              <a href="/profile/{{this.author.id}}">{{this.author.name}}</a> <!-- Perfil público -->
+            {{/if}}
+            | Publicado el: {{this.createdAt}}
+          </p>
+
+          <!-- Mostrar opciones para administradores -->
+          {{#if (eq ../user.role 'ADMIN')}}
+            <a href="/posts/edit/{{this.id}}" class="btn-edit">Editar</a>
+            <form action="/posts/delete/{{this.id}}" method="post" style="display:inline;">
+              <button type="submit" class="btn-delete">Eliminar</button>
+            </form>
+          {{/if}}
+        </div>
+        <hr />
+      {{/each}}
+    </div>
+
+    <!-- Formulario para crear un nuevo post -->
+    <h2>Crear un nuevo post</h2>
+    <form action="/posts" method="post">
+      <div>
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
+      <div>
+        <label for="content">Contenido:</label>
+        <textarea id="content" name="content" rows="4" required></textarea>
+      </div>
+      <button type="submit">Publicar</button>
+    </form>
+  </body>
+</html>
+
