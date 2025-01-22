@@ -5,34 +5,7 @@ const passport = require("passport");
 const prisma = require("../prisma");
 
 /**
- * @swagger
- * /auth/register:
- *   post:
- *     summary: Register a new user
- *     description: Registers a new user by saving their email and hashed password.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email.
- *               password:
- *                 type: string
- *                 format: password
- *                 description: User's password.
- *     responses:
- *       302:
- *         description: Redirects to the login page on success.
- *       500:
- *         description: Redirects to the registration page on error.
+ * Registro de usuario
  */
 router.post("/register", async (req, res) => {
   try {
@@ -51,74 +24,51 @@ router.post("/register", async (req, res) => {
     console.log("Usuario registrado:", newUser); // Log para depuración
     res.redirect("/auth/login-page");
   } catch (error) {
-    console.log("Error al registrar usuario:", error); // Log del error
+    console.error("Error al registrar usuario:", error); // Log del error
     res.redirect("/auth/register-page");
   }
 });
 
 /**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Authenticate user
- *     description: Logs in a user using email and password.
- *     requestBody:
- *       required: true
- *       content:
- *         application/x-www-form-urlencoded:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email.
- *               password:
- *                 type: string
- *                 format: password
- *                 description: User's password.
- *     responses:
- *       302:
- *         description: Redirects to the home page on success, login page on failure.
+ * Autenticación de usuario
  */
 router.post(
   "/login",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/auth/login-page",
-    failureFlash: true,
-  })
+  (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        console.error("Error en la autenticación:", err);
+        return next(err); // Manejo de errores
+      }
+      if (!user) {
+        req.flash("error", info?.message || "Credenciales inválidas");
+        return res.redirect("/auth/login-page"); // Redirige en caso de fallo
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          console.error("Error al iniciar sesión:", err);
+          return next(err);
+        }
+        // Redirige al inicio si todo está correcto
+        return res.redirect("/");
+      });
+    })(req, res, next);
+  }
 );
 
 /**
- * @swagger
- * /auth/login-page:
- *   get:
- *     summary: Login page
- *     description: Renders the login page.
- *     responses:
- *       200:
- *         description: Returns the login page.
+ * Página de inicio de sesión
  */
 router.get("/login-page", (req, res) => {
   res.render("login", { error: req.flash("error") });
 });
 
 /**
- * @swagger
- * /auth/register-page:
- *   get:
- *     summary: Registration page
- *     description: Renders the registration page.
- *     responses:
- *       200:
- *         description: Returns the registration page.
+ * Página de registro
  */
 router.get("/register-page", (req, res) => {
   res.render("register", { error: req.flash("error") });
 });
 
 module.exports = router;
+
