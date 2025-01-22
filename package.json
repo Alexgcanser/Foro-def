@@ -6,9 +6,9 @@
     "start": "node ./bin/www",
     "dev": "DEBUG=express-template:* nodemon ./bin/www",
     "dev:windows": "set DEBUG=express-template:* & nodemon ./bin/www",
-    "test": "jest"
+    "build": "npm install && npm run prisma:generate",
     "prisma:generate": "prisma generate",
-    "build": "npm install && npm run prisma:generate"
+    "test": "jest"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1",
