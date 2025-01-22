@@ -6,13 +6,12 @@ const logger = require('morgan');
 const flash = require('connect-flash');
 const { create } = require('express-handlebars');
 const session = require('express-session');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
 const passport = require('passport');
 const pgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 const PORT = process.env.PORT || 3000;
 const postRoutes = require('./routes/posts');
-
 const swaggerDocs = require('./config/swagger').swaggerDocs;
 const swaggerUi = require('./config/swagger').swaggerUi;
 
@@ -20,7 +19,7 @@ const hbs = create({
   extname: 'hbs',
   defaultLayout: 'main',
   partialsDir: 'views/partials',
-  helpers: require('./utils/helpers')
+  helpers: require('./utils/helpers'),
 });
 
 require('dotenv').config();
@@ -33,6 +32,7 @@ const indexRouter = require('./routes/index');
 
 const app = express();
 
+// Configuración de sesión
 app.use(
   session({
     store: new pgSession({
@@ -43,16 +43,17 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
     },
   })
 );
 
-// view engine setup
+// Configuración del motor de vistas
 app.engine('hbs', hbs.engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+// Middlewares
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -66,26 +67,30 @@ app.use(passport.session());
 require('./config/passport');
 require('./config/cloudinary');
 
+// Documentación de Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
+// Rutas
 app.use('/', indexRouter);
 app.use('/posts', postRoutes);
 
-// catch 404 and forward to error handler
+// Manejo de rutas no encontradas (404)
 app.use(function (req, res, next) {
+  console.log("404 - Ruta no encontrada:", req.url); // Log de depuración
   next(createError(404));
 });
 
-// error handler
+// Middleware de manejo de errores
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+  if (res.headersSent) {
+    console.error("Error: Los headers ya se enviaron.");
+    return next(err);
+  }
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
-
 module.exports = app;
+
